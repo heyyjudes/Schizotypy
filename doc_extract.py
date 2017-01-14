@@ -1,3 +1,4 @@
+import re
 import os
 import sys
 import docx
@@ -12,6 +13,15 @@ def extract_IPII():
         print filename
         extended_name = 'data\\IPII\\' + filename
         doc = docx.Document(extended_name)
+
+        patient_num = re.findall(r'\d+', filename)
+        print patient_num
+        if(patient_num[0][2] == '1'):
+            #contol
+            f_sum = open('f_control.txt', 'w')
+        else:
+            assert(patient_num[0][2] == '2')
+            f_sum = open('f_risk.txt', 'w')
 
         # create file for only patient responses
         text_name_patient = 'data\\IPII_patient\\' + filename.rstrip('.docx') + '_patient.txt'
@@ -35,9 +45,11 @@ def extract_IPII():
                         's:'):
 
                     f_pair.write('\n')
-                    f_pair.write('v: ' + cleaned_str)
+                    f_pair.write('subject: ' + cleaned_str)
                     f_patient.write('\n')
                     f_patient.write(cleaned_str)
+                    f_sum.write('\n')
+                    f_sum.write(cleaned_str)
                     prev = 'patient'
 
                 # check for new interviewer response
@@ -50,7 +62,9 @@ def extract_IPII():
                 else:
                     if prev == 'patient':
                         f_patient.write(cleaned_str)
-                        f_pair.write('v: ' + lower_str)
+                        f_pair.write('subject: ' + lower_str)
+                        f_sum.write('\n')
+                        f_sum.write(cleaned_str)
 
                     elif prev == 'interviewer':
                         f_pair.write('i: ' + lower_str)
@@ -73,6 +87,26 @@ def extract_EAR_Schizotypy():
         print filename
         extended_name = 'data\\EAR Schizotypy Study Transcripts\\' + filename
         doc = docx.Document(extended_name)
+        #file name 2nd digit 1 = control 3 = Schizophrenia
+        patient_num = re.findall(r'\d+', filename)
+        print patient_num
+        if(patient_num[1] == '14'):
+            #3rd digit labels
+            if(patient_num[0][2] == '1'):
+                #contol
+                f_sum = open('f_control.txt', 'a')
+            else:
+                assert(patient_num[0][2] == '2')
+                f_sum = open('f_risk.txt', 'a')
+        else:
+            assert(patient_num[1] == '16')
+            #2rd digit labels
+            if(patient_num[0][1] == '1'):
+                #contol
+                f_sum = open('f_control.txt', 'a')
+            else:
+                assert(patient_num[0][1] == '2')
+                f_sum = open('f_risk.txt', 'a')
 
         # create file for only patient responses
         text_name_patient = 'data\\EAR_Schizotypy_patient\\' + filename.rstrip('.docx') + '_patient.txt'
@@ -96,6 +130,8 @@ def extract_EAR_Schizotypy():
                         f_pair.write('subject: ' + line_arr[1])
                         f_patient.write('\n')
                         f_patient.write(line_arr[1])
+                        f_sum.write('\n')
+                        f_sum.write(line_arr[1])
                     # check for new interviewer response
                     elif not line_arr[0].startswith('recording'):
                         f_pair.write('\n')
@@ -116,6 +152,16 @@ def extract_EAR_Schizophrenia():
         assert filename.endswith(".docx")
         print count
         print filename
+        #file name 2nd digit 1 = control 3 = Schizophrenia
+        patient_num = re.findall(r'\d+', filename)
+        print patient_num
+        if(patient_num[0][1] == '1'):
+            #contol
+            f_sum = open('f_control.txt', 'a')
+        else:
+            assert(patient_num[0][1] == '3')
+            f_sum = open('f_risk.txt', 'a')
+
         extended_name = 'data\\EAR Schizophrenia Pilot Study Transcripts\\' + filename
         doc = docx.Document(extended_name)
 
@@ -141,6 +187,9 @@ def extract_EAR_Schizophrenia():
                         f_pair.write('subject: ' + line_arr[1])
                         f_patient.write('\n')
                         f_patient.write(line_arr[1])
+                        f_sum.write('\n')
+                        f_sum.write(line_arr[1])
+
                     # check for new interviewer response
                     elif not line_arr[0].startswith('recording'):
                         f_pair.write('\n')
@@ -156,6 +205,6 @@ def extract_EAR_Schizophrenia():
 if __name__ == "__main__":
     sys.path.extend(['C:\\Users\\heyyj\\PycharmProjects\\Schizotypy'])
     #number of docx files in folder
-    #extract_IPII()
-    #extract_EAR_Schizotypy()
+    extract_IPII()
+    extract_EAR_Schizotypy()
     extract_EAR_Schizophrenia()
