@@ -5,8 +5,7 @@ import numpy as np
 from logreg import run_LR
 from svm import run_SVM
 from sklearn.preprocessing import scale
-
-prep = imp.load_source('preprocess', 'C:\\Users\\heyyj\\PycharmProjects\\NLP_lib\\preprocess.py')
+import NLP_lib.preprocess
 
 def build_dic_bristol():
     input_file = csv.DictReader(open('data\\BristolNorms\\BristolNorms+GilhoolyLogie.csv', 'r'))
@@ -70,6 +69,7 @@ def calculate_score_anew(tokens, dict):
     return avg_val, avg_aff, avg_dom
 
 def build_model_vecs_sent(process, dict, type):
+    ''''''
     y_set = None
     vecs_set = None
     if type == "ANEW":
@@ -81,6 +81,7 @@ def build_model_vecs_sent(process, dict, type):
         target = np.zeros((1,1))
         target[0][0] = process.target_arr[i]
         doc = patient_arr[i]
+
         for sentence in doc:
             result = np.zeros((1, 3))
             anew_words = 0
@@ -91,15 +92,16 @@ def build_model_vecs_sent(process, dict, type):
                     result[0][1] += aff
                     result[0][2] += dom
                     anew_words += 1
-            if anew_words != 0:
+            if anew_words > 5:
                 result /= anew_words
-                if vecs_set == None:
-                    vecs_set = result
-                    y_set = target
-                else:
-                    vecs_set = np.concatenate((vecs_set, result))
-                    y_set = np.concatenate((y_set, target))
-    vecs_set = scale(vecs_set)
+            else:
+                result = np.zeros((1, 3))
+            if vecs_set == None:
+                vecs_set = result
+                y_set = target
+            else:
+                vecs_set = np.concatenate((vecs_set, result))
+                y_set = np.concatenate((y_set, target))
     return vecs_set, y_set
 
 def build_model_vecs_patient(process, dict, type):
@@ -138,6 +140,7 @@ def build_model_vecs_patient(process, dict, type):
 def build_model_vecs_comb_sent(process, anew_dict, bristol_dict):
     y_set = None
     vecs_set = None
+    empty = 0
     assert (len(process.stemmed_tokens) == len(process.target_arr))
     for i in range(0, len(process.stemmed_tokens)):
         target = np.zeros((1, 1))
@@ -175,13 +178,48 @@ def build_model_vecs_comb_sent(process, anew_dict, bristol_dict):
                 else:
                     vecs_set = np.concatenate((vecs_set, result))
                     y_set = np.concatenate((y_set, target))
+            else:
+                empty += 1
+    print empty
     vecs_set = scale(vecs_set)
     return vecs_set, y_set
+
+
+def build_anew_feat(process, dict, type, input_arr):
+    ''''''
+    y_set = None
+    vecs_set = None
+    input_arr = process.remove_stop(input_arr)
+
+    if type == "ANEW":
+        input_arr = process.stem(input_arr)
+
+    for sentence in input_arr:
+        result = np.zeros((1, 3))
+        anew_words = 0
+        for word in sentence:
+            if word in dict:
+                val, aff, dom = dict[word]
+                result[0][0] += val
+                result[0][1] += aff
+                result[0][2] += dom
+                anew_words += 1
+        if anew_words > 5:
+            result /= anew_words
+        else:
+            result = np.zeros((1, 3))
+        if vecs_set == None:
+            vecs_set = result
+        else:
+            vecs_set = np.concatenate((vecs_set, result))
+
+    return vecs_set
+
 
 if __name__ == '__main__':
     anew_dict = build_dic_anew()
     bristol_dic = build_dic_bristol()
-    anewPrep = prep.PreProcessorANEW('data\\IPII_patient', dir=True)
+    anewPrep = NLP_lib.preprocess.PreProcessorANEW('data\\IPII_patient', dir=True)
     anewPrep.tokenize_LDA()
     anewPrep.remove_stop_LDA()
     anewPrep.stem_LDA()
@@ -196,6 +234,7 @@ if __name__ == '__main__':
     #      print "Age of Aquisition", aoa, "Imagability", img, "Familiarity", fam
 
     x, y =  build_model_vecs_comb_sent(anewPrep, anew_dict, bristol_dic)
+    print len(x)
     run_LR(x,y)
     run_SVM(x, y)
 
