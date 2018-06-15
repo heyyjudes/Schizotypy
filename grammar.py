@@ -1,17 +1,17 @@
 import os
-os.environ['CLASSPATH'] = "C:\\Users\\heyyj\\PycharmProjects\\stanford-parser-full-2016-10-31\\stanford-parser.jar"
-os.environ['JAVAHOME'] = "C:\\Program Files\\Java\\jre1.8.0_112\\bin"
+# os.environ['CLASSPATH'] = "C:\\Users\\heyyj\\PycharmProjects\\stanford-parser-full-2016-10-31\\stanford-parser.jar"
+# os.environ['JAVAHOME'] = "C:\\Program Files\\Java\\jre1.8.0_112\\bin"
 from nltk.parse.stanford import StanfordParser
 import nltk
 import NLP_lib
 import re
 import numpy as np
-stanford_parser_dir = "C:\\Users\\heyyj\\PycharmProjects\\stanford-parser-full-2016-10-31\\"
-eng_model_path = stanford_parser_dir + "edu\\stanford\\nlp\\models\\lexparser\\englishRNN.ser.gz"
-my_path_to_models_jar = stanford_parser_dir + "stanford-parser-3.7.0-models.jar"
-my_path_to_jar = stanford_parser_dir + "stanford-parser.jar"
-
-parser = StanfordParser(path_to_models_jar=my_path_to_models_jar, path_to_jar=my_path_to_jar)
+# stanford_parser_dir = "C:\\Users\\heyyj\\PycharmProjects\\stanford-parser-full-2016-10-31\\"
+# eng_model_path = stanford_parser_dir + "edu\\stanford\\nlp\\models\\lexparser\\englishRNN.ser.gz"
+# my_path_to_models_jar = stanford_parser_dir + "stanford-parser-3.7.0-models.jar"
+# my_path_to_jar = stanford_parser_dir + "stanford-parser.jar"
+#
+# parser = StanfordParser(path_to_models_jar=my_path_to_models_jar, path_to_jar=my_path_to_jar)
 
 yc = NLP_lib.yngve.Yngve_calculator()
 

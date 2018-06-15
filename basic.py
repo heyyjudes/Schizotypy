@@ -1,7 +1,7 @@
 import nltk
 import re
 
-wordlist_url = 'data\\Wordlists\\'
+wordlist_url = 'data/Wordlists/'
 def f_first_person(input_arr):
     keywords = open(wordlist_url + 'First-person').read().splitlines()
     keywords = [z.lower() for z in keywords]

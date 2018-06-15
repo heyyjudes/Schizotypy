@@ -8,7 +8,7 @@ from sklearn.preprocessing import scale
 import NLP_lib.preprocess
 
 def build_dic_bristol():
-    input_file = csv.DictReader(open('data\\BristolNorms\\BristolNorms+GilhoolyLogie.csv', 'r'))
+    input_file = csv.DictReader(open('data/BristolNorms/BristolNorms+GilhoolyLogie.csv', 'r'))
     condensed_dict = {}
     porter = nltk.PorterStemmer()
     for row in input_file:
@@ -40,7 +40,7 @@ def calculate_score_bristol(unstemmed_tokens, dict):
     return avg_aoa, avg_img, avg_fam
 
 def build_dic_anew():
-    input_file = csv.DictReader(open('data\\ANEW\\Ratings_Warriner_et_al.csv', 'r'))
+    input_file = csv.DictReader(open('data/ANEW/Ratings_Warriner_et_al.csv', 'r'))
     condensed_dict = {}
     porter = nltk.PorterStemmer()
     for row in input_file:

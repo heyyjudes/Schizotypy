@@ -2,6 +2,7 @@ from anew import *
 import numpy as np
 from logreg import run_LR
 from svm import run_SVM
+from NNet import run_NN
 from sklearn.preprocessing import scale
 import NLP_lib.preprocess
 import basic
@@ -78,8 +79,8 @@ class FeatureGenerator:
         assert(self.pre_process != None)
         #cltr_vecs = grammar.build_complexity_features(self.pre_process.cltr_token, 'cltr')
         #risk_vecs = grammar.build_complexity_features(self.pre_process.risk_token, 'risk')
-        cltr_vecs = np.load('cltr.npy')
-        risk_vecs = np.load('risk.npy')
+        cltr_vecs = np.load('g_cltr.npy')
+        risk_vecs = np.load('g_risk.npy')
         print "grammar control", len(cltr_vecs)
         print "grammar risk", len(risk_vecs)
         feat_vec = np.concatenate((cltr_vecs, risk_vecs))
@@ -112,7 +113,7 @@ class FeatureGenerator:
 
 if __name__ == "__main__":
     #preprocessing
-    anewPrep = NLP_lib.preprocess.PreProcessorFG('data\\f_control.txt', 'data\\f_risk.txt')
+    anewPrep = NLP_lib.preprocess.PreProcessorFG('data/f_control.txt', 'data/f_risk.txt')
 
     anewPrep.process()
     print len(anewPrep.cltr_sent)
@@ -127,16 +128,17 @@ if __name__ == "__main__":
     feat_gen = FeatureGenerator()
     feat_gen.set_preprocess(anewPrep)
 
-    #feat_gen.build_ANEW()
-    #feat_gen.build_Bristol()
-    #feat_gen.build_basic()
-    #feat_gen.build_complexity()
+    feat_gen.build_ANEW()
+    feat_gen.build_Bristol()
+    feat_gen.build_basic()
+    feat_gen.build_complexity()
 
     #scaling
-    #feat_gen.remove_null_and_scale()
+    feat_gen.remove_null_and_scale()
 
     #run learning
     run_LR(feat_gen.feat_vec, feat_gen.target_vec)
     run_SVM(feat_gen.feat_vec, feat_gen.target_vec)
+    run_NN(feat_gen.feat_vec, feat_gen.target_vec)
 
 
